@@ -1,0 +1,68 @@
+01234657890123465789012346578901234657890123465789012346578901234657890123465789
+class DFUFirmwareUpdateManager
+- Can run tool from the command line and extract its output.
+- Knows command-line options of Firmware Update tool.
+- Knows how to parse/dissect output of firmware Update tool.
+
+class DFUUbuntuShellManager
+- Can run shell commands from the command line and extract its output.
+- Knows (some) command-line options of lsusb command.
+- Knows how to parse/dissect output of lsusb command.
+
+class DFUTestCaseFileManager
+- Can read file containing test-case one line at a time and constructs
+  a matrix each with test-case command, test-case description, test-case output,
+  test-case output description, and result of build X.
+
+class DFUToolMain
+- Instantiates all classes above and coordinates actions and communication
+  between each class.
+
+--------------------------------------------------------------------------------
+Python tool where given a list of test-cases, and a command-line tool to perform
+firmware upgrades, it needs to do the following:
+
+- Run an external command and capture output
+- Dissect/parse output to determine the relevant information
+- Be able to run one test-case from the command line or to retrieve a file (
+containing test -cases).
+
+run command lsusb
+extract data
+Bus DDD Device DDD: ID AAAA:BBBB Vendor Name
+AAAA stands for Vendor ID
+BBBB stands for Product ID
+Find line corresponding to DS5 PSR device.
+
+run command sudo ./FWUpdateDS5 -b D -d D
+DS5 busnum = 2
+DS5 devnum = 5
+DS5 FW file path = ./ds5/fw/ds5_fw.bin
+FW version on file = 8.8.8.8
+FW version on device = 5.1.12.0
+FW update required...updating FW.
+DFU FW version on file = 8.8.8.8
+DFU_version = 53
+DFU_isLocked = 0
+FW_highestVersion = 0.0.0.0
+FW_lastVersion = 0.0.0.0
+FW_SerialNumber = 01234567FFFFFF8901
+Percentage done: 99
+Burning REALTEK...
+
+Error case
+DS5 busnum = 2
+DS5 devnum = 5
+DS5 FW file path = ./ds5/fw/ds5_fw.bin
+
+Error: libusb_open(...) returned LIBUSB_ERROR_ACCESS
+
+Usage case
+Usage: FWUpdateDS5 [OPTIONS]
+[OPTIONS]
+        -b usb bus number of device
+        -d usb device number of device
+        -f force firmware update
+        -i <input_file> path to firmware file
+        -v print firmware update tool version
+        -h display this message and exit
